@@ -1,6 +1,0 @@
-@OpenEduSyncShareApi_HostAddress = http://localhost:5291
-
-GET {{OpenEduSyncShareApi_HostAddress}}/weatherforecast/
-Accept: application/json
-
-###
