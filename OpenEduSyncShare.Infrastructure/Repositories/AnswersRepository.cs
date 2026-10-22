@@ -1,4 +1,5 @@
 ﻿using System.Net.Sockets;
+using System.Text.Json;
 using Microsoft.EntityFrameworkCore;
 using Npgsql;
 using OpenEduSyncShare.Application.Exceptions;
@@ -20,7 +21,7 @@ public sealed class AnswersRepository(AppDbContext dbContext) : IAnswersReposito
         };
     }
 
-    public async Task<Dictionary<string, string?>> GetAnswersAsync(
+    public async Task<Dictionary<string, JsonElement?>> GetAnswersAsync(
         IEnumerable<string> queries,
         CancellationToken cancellationToken = default)
     {
@@ -35,11 +36,14 @@ public sealed class AnswersRepository(AppDbContext dbContext) : IAnswersReposito
 
             var answersById = storedAnswers.ToDictionary(
                 answer => answer.QuestionId,
-                answer => answer.AnswerText);
+                answer => answer.AnswerData);
 
             return questionIds.ToDictionary(
                 questionId => questionId,
-                answersById.GetValueOrDefault);
+                questionId => answersById.TryGetValue(
+                    questionId, out var answer)
+                    ? (JsonElement?)answer
+                    : null);
         }
         catch (Exception ex) when (IsConnectionFailure(ex))
         {
@@ -48,7 +52,7 @@ public sealed class AnswersRepository(AppDbContext dbContext) : IAnswersReposito
     }
 
     public async Task SaveAnswersAsync(
-        Dictionary<string, string> answers,
+        Dictionary<string, JsonElement> answers,
         CancellationToken cancellationToken = default)
     {
         try
@@ -61,18 +65,24 @@ public sealed class AnswersRepository(AppDbContext dbContext) : IAnswersReposito
                     answer => answer.QuestionId,
                     cancellationToken);
 
-            foreach (var (questionId, answerText) in answers)
+            foreach (var (questionId, answerData) in answers)
             {
+                if (answerData.ValueKind == JsonValueKind.Undefined)
+                {
+                    throw new ArgumentException(
+                        $"'{answerData}' is not a valid JSON value for question ID {questionId}.");
+                }
+
                 if (existingAnswers.TryGetValue(questionId, out var existing))
                 {
-                    existing.AnswerText = answerText;
+                    existing.AnswerData = answerData;
                 }
                 else
                 {
                     dbContext.Answers.Add(new Answer
                     {
                         QuestionId = questionId,
-                        AnswerText = answerText
+                        AnswerData = answerData
                     });
                 }
             }

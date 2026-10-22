@@ -20,9 +20,9 @@ public sealed class AppDbContext(DbContextOptions<AppDbContext> options) : DbCon
                 .HasColumnType("text")
                 .IsRequired();
 
-            entity.Property(e => e.AnswerText)
+            entity.Property(e => e.AnswerData)
                 .HasColumnName("answer")
-                .HasColumnType("text")
+                .HasColumnType("jsonb")
                 .IsRequired();
         });
     }

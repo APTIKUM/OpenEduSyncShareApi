@@ -1,11 +1,12 @@
-﻿using OpenEduSyncShare.Application.Interfaces;
+﻿using System.Text.Json;
+using OpenEduSyncShare.Application.Interfaces;
 
 namespace OpenEduSyncShare.Application.Services;
 
 public sealed class AnswersService(
     IAnswersRepository answersRepository) : IAnswersService
 {
-    public Task<Dictionary<string, string?>> GetAnswersAsync(
+    public Task<Dictionary<string, JsonElement?>> GetAnswersAsync(
         IEnumerable<string> queries,
         CancellationToken cancellationToken = default)
     {
@@ -14,7 +15,7 @@ public sealed class AnswersService(
     }
 
     public Task SaveAnswersAsync(
-        Dictionary<string, string> answers,
+        Dictionary<string, JsonElement> answers,
         CancellationToken cancellationToken = default)
     {
         return answersRepository.SaveAnswersAsync(

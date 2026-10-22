@@ -1,12 +1,14 @@
-﻿namespace OpenEduSyncShare.Application.Interfaces;
+﻿using System.Text.Json;
+
+namespace OpenEduSyncShare.Application.Interfaces;
 
 public interface IAnswersService
 {
-    Task<Dictionary<string, string?>> GetAnswersAsync(
+    Task<Dictionary<string, JsonElement?>> GetAnswersAsync(
         IEnumerable<string> queries,
         CancellationToken cancellationToken = default);
 
     Task SaveAnswersAsync(
-        Dictionary<string, string> answers,
+        Dictionary<string, JsonElement> answers,
         CancellationToken cancellationToken = default);
 }

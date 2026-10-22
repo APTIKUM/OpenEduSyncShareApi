@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using System.Text.Json;
+using Microsoft.AspNetCore.Mvc;
 using OpenEduSyncShare.Application.Interfaces;
 
 namespace OpenEduSyncShare.Api.Controllers;
@@ -8,7 +9,7 @@ namespace OpenEduSyncShare.Api.Controllers;
 public sealed class AnswersController(IAnswersService answersService) : ControllerBase
 {
     [HttpPost("query")]
-    public async Task<ActionResult<Dictionary<string, string?>>> GetAnswers(
+    public async Task<ActionResult<Dictionary<string, JsonElement?>>> GetAnswers(
         [FromBody] IEnumerable<string> queries,
         CancellationToken cancellationToken)
     {
@@ -20,7 +21,7 @@ public sealed class AnswersController(IAnswersService answersService) : Controll
 
     [HttpPost("set")]
     public async Task<ActionResult> SetAnswers(
-        [FromBody] Dictionary<string, string> answers,
+        [FromBody] Dictionary<string, JsonElement> answers,
         CancellationToken cancellationToken)
     {
         await answersService.SaveAnswersAsync(
