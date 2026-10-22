@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using OpenEduSyncShare.Api.ExceptionHandling;
 using OpenEduSyncShare.Application.Interfaces;
 using OpenEduSyncShare.Application.Services;
 using OpenEduSyncShare.Infrastructure.Persistence;
@@ -13,6 +14,9 @@ builder.Services.AddControllers();
 builder.Services.AddDbContext<AppDbContext>(option =>
     option.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 
+builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
+builder.Services.AddProblemDetails();
+
 builder.Services.AddScoped<IAnswersService, AnswersService>();
 builder.Services.AddScoped<IAnswersRepository, AnswersRepository>();
 
@@ -24,6 +28,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+app.UseExceptionHandler();
 app.UseHttpsRedirection();
 
 app.MapControllers();
