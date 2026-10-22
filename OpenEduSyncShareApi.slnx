@@ -1,3 +1,6 @@
 <Solution>
-  <Project Path="OpenEduSyncShareApi/OpenEduSyncShareApi.csproj" />
+  <Project Path="OpenEduSyncShare.Api/OpenEduSyncShare.Api.csproj" />
+  <Project Path="OpenEduSyncShare.Application/OpenEduSyncShare.Application.csproj" />
+  <Project Path="OpenEduSyncShare.Domain/OpenEduSyncShare.Domain.csproj" />
+  <Project Path="OpenEduSyncShare.Infrastructure/OpenEduSyncShare.Infrastructure.csproj" />
 </Solution>
